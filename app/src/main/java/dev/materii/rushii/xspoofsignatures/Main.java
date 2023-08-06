@@ -1,4 +1,4 @@
-package dev.materii.rushii.xspoofsignature;
+package dev.materii.rushii.xspoofsignatures;
 
 import android.content.pm.*;
 import android.os.Build;
@@ -45,7 +45,7 @@ public class Main implements IXposedHookLoadPackage {
 				PackageInfo pi = (PackageInfo) param.getResult();
 				if (pi == null) return;
 
-				int flags = (int) param.args[1];
+				long flags = (long) param.args[1];
 				if (!isFetchingSignatures(flags)) return;
 
 				// Get the declared fake signature from manifest meta-data

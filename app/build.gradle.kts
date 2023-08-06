@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-	namespace = "dev.materii.rushii.xspoofsig"
+	namespace = "dev.materii.rushii.xspoofsignatures"
 	compileSdk = 34
 
 	defaultConfig {
-		applicationId = "dev.materii.rushii.xspoofsig"
+		applicationId = "dev.materii.rushii.xspoofsignatures"
 		minSdk = 16
 		versionCode = 1
 		versionName = "1.0.0"
@@ -16,12 +16,6 @@ android {
 	// signingConfigs {
 	// 	named("release") {}
 	// }
-
-	packagingOptions {
-		resources {
-			excludes += "META-INF/**"
-		}
-	}
 
 	buildTypes {
 		release {
@@ -35,6 +29,10 @@ android {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
 	}
+}
+
+tasks.withType<JavaCompile> {
+	options.compilerArgs.add("-Xlint:-deprecation")
 }
 
 dependencies {

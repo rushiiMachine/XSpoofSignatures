@@ -12,9 +12,9 @@
 		tools:ignore="ReservedSystemPermission" />
 
 	<application
+		android:description="@string/module_description"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
-		android:description="@string/module_description"
 		android:roundIcon="@mipmap/ic_launcher_round">
 
 		<meta-data

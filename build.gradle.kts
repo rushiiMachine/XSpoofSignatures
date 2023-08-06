@@ -12,6 +12,10 @@ allprojects {
 	repositories {
 		google()
 		mavenCentral()
-		jcenter()
+		maven(url = "https://jcenter.bintray.com/")
 	}
+}
+
+tasks.register<Delete>("clean") {
+	delete(rootProject.buildDir)
 }

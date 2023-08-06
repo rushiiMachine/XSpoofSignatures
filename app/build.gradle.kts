@@ -8,7 +8,7 @@ android {
 
 	defaultConfig {
 		applicationId = "dev.materii.rushii.xspoofsig"
-		minSdk = 14
+		minSdk = 16
 		versionCode = 1
 		versionName = "1.0.0"
 	}

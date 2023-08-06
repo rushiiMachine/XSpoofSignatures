@@ -43,21 +43,23 @@ public class Main implements IXposedHookLoadPackage {
 				// Get the declared fake signature from manifest meta-data
 				String fakeSig;
 				if (pi.applicationInfo == null ||
-					pi.applicationInfo.metaData != null ||
+					pi.applicationInfo.metaData == null ||
 					(fakeSig = pi.applicationInfo.metaData.getString("fake-signature")) == null) {
 					return;
 				}
 
 				// Check if the permission was granted
-				boolean found = false;
-				if (pi.permissions == null) return;
-				for (PermissionInfo p : pi.permissions) {
-					if ("android.permission.FAKE_PACKAGE_SIGNATURE".equals(p.name)) {
-						found = true;
+				if (pi.requestedPermissions == null ||
+					pi.requestedPermissionsFlags == null) return;
+				boolean granted = false;
+				for (int i = 0; i < pi.requestedPermissions.length; i++) {
+					if ("android.permission.FAKE_PACKAGE_SIGNATURE".equals(pi.requestedPermissions[i]) &&
+						(pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
+						granted = true;
 						break;
 					}
 				}
-				if (!found) return;
+				if (!granted) return;
 
 				Log.d(TAG, "Spoofing signature for " + pi.packageName);
 

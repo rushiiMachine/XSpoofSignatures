@@ -4,7 +4,7 @@ plugins {
 
 android {
 	namespace = "dev.materii.rushii.xspoofsig"
-	compileSdk = 33
+	compileSdk = 34
 
 	defaultConfig {
 		applicationId = "dev.materii.rushii.xspoofsig"

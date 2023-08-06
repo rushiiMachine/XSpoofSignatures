@@ -117,6 +117,7 @@ public class Main implements IXposedHookLoadPackage {
 
 		String targetClass;
 		switch (Build.VERSION.SDK_INT) {
+			case Build.VERSION_CODES.UPSIDE_DOWN_CAKE:
 			case Build.VERSION_CODES.TIRAMISU:
 				targetClass = "com.android.server.pm.ComputerEngine";
 				break;

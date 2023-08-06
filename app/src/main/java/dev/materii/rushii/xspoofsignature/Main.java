@@ -1,20 +1,34 @@
 package dev.materii.rushii.xspoofsignature;
 
-import android.content.pm.*;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
+import android.content.pm.Signature;
 import android.os.Build;
 import android.util.Log;
 
-import de.robv.android.xposed.*;
+import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class Main implements IXposedHookLoadPackage {
 	private static final String TAG = "XSpoofSignatures";
 
-	private boolean isFetchingSignatures(int flags) {
+	private static boolean isFetchingSignatures(int flags) {
 		int mask = PackageManager.GET_SIGNATURES |
 			(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? PackageManager.GET_SIGNING_CERTIFICATES : 0);
 
 		return (flags & mask) != 0;
+	}
+
+	// Copy all signatures to a new array with an extra sig at the beginning
+	private static Signature[] copySignatures(Signature[] orig, Signature extra) {
+		Signature[] signatures = new Signature[orig.length + 1];
+		signatures[0] = extra;
+		System.arraycopy(orig, 0, signatures, 1, orig.length);
+		return signatures;
 	}
 
 	@Override
@@ -61,19 +75,40 @@ public class Main implements IXposedHookLoadPackage {
 				}
 				if (!granted) return;
 
+				// Check if whether to preserve the other signatures
+				boolean makeSoleSigner = pi.applicationInfo.metaData.getBoolean("fake-signature-only", true);
+
 				Log.d(TAG, "Spoofing signature for " + pi.packageName);
 
 				if (pi.signatures != null) {
-					pi.signatures = new Signature[]{ new Signature(fakeSig) };
+					Signature sig = new Signature(fakeSig);
+					if (makeSoleSigner) {
+						pi.signatures = new Signature[]{ sig };
+					} else {
+						pi.signatures = copySignatures(pi.signatures, sig);
+					}
 				}
 
-				Signature[] sigInfoSignatures;
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-					&& pi.signingInfo != null
-					&& (sigInfoSignatures = pi.signingInfo.getApkContentsSigners()).length > 0) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && pi.signingInfo != null) {
+					Signature[] origSignatures = pi.signingInfo.getApkContentsSigners();
+					Signature sig = new Signature(fakeSig);
 
-					// Not sure if this will maintain compatibility when multiple signers exist
-					sigInfoSignatures[0] = new Signature(fakeSig);
+					if (makeSoleSigner && origSignatures.length == 1) {
+						origSignatures[0] = sig;
+					} else {
+						Object signingDetails = XposedHelpers.getObjectField(pi.signingInfo, "mSigningDetails");
+						Signature[] newSignatures;
+
+						if (makeSoleSigner) {
+							newSignatures = new Signature[]{ sig };
+						} else {
+							// SigningInfo#mSigningDetails (SigningDetails)
+							newSignatures = copySignatures(origSignatures, sig);
+						}
+
+						// SigningDetails#mSignatures (Signature[])
+						XposedHelpers.setObjectField(signingDetails, "mSignatures", newSignatures);
+					}
 				}
 			}
 		};

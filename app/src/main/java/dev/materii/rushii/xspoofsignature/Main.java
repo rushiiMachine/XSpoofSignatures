@@ -1,22 +1,16 @@
 package dev.materii.rushii.xspoofsignature;
 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PermissionInfo;
-import android.content.pm.Signature;
+import android.content.pm.*;
 import android.os.Build;
 import android.util.Log;
 
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.*;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class Main implements IXposedHookLoadPackage {
 	private static final String TAG = "XSpoofSignatures";
 
-	private static boolean isFetchingSignatures(int flags) {
+	private static boolean isFetchingSignatures(long flags) {
 		int mask = PackageManager.GET_SIGNATURES |
 			(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? PackageManager.GET_SIGNING_CERTIFICATES : 0);
 
@@ -38,7 +32,7 @@ public class Main implements IXposedHookLoadPackage {
 		XC_MethodHook hook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) {
-				int flags = (int) param.args[1];
+				long flags = (long) param.args[1];
 
 				// Avoid getting metadata when not needed
 				if (!isFetchingSignatures(flags)) return;
@@ -106,8 +100,16 @@ public class Main implements IXposedHookLoadPackage {
 							newSignatures = copySignatures(origSignatures, sig);
 						}
 
-						// SigningDetails#mSignatures (Signature[])
-						XposedHelpers.setObjectField(signingDetails, "mSignatures", newSignatures);
+						String targetField;
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+							// SigningDetails#mSignatures (Signature[])
+							targetField = "mSignatures";
+						} else {
+							// SV2 and below
+							// PackageParser$SigningDetails#signatures (Signature[])
+							targetField = "signatures";
+						}
+						XposedHelpers.setObjectField(signingDetails, targetField, newSignatures);
 					}
 				}
 			}

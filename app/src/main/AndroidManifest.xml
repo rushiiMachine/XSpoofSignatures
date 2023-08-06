@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools">
+
+	<!-- Create the fake sig permission -->
+	<permission
+		android:name="android.permission.FAKE_PACKAGE_SIGNATURE"
+		android:description="@string/permdesc_fakePackageSignature"
+		android:icon="@drawable/ic_launcher_foreground"
+		android:label="@string/permlab_fakePackageSignature"
+		android:protectionLevel="dangerous"
+		tools:ignore="ReservedSystemPermission" />
+
+	<application
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
+		android:description="@string/module_description"
+		android:roundIcon="@mipmap/ic_launcher_round">
+
+		<meta-data
+			android:name="xposedmodule"
+			android:value="true" />
+		<meta-data
+			android:name="xposeddescription"
+			android:value="@string/module_description" />
+		<meta-data
+			android:name="xposedminversion"
+			android:value="36" />
+		<meta-data
+			android:name="xposedscope"
+			android:resource="@array/scope" />
+	</application>
+</manifest>

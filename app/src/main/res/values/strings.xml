@@ -1,0 +1,6 @@
+<resources>
+	<string name="app_name">XSpoofSignatures</string>
+	<string name="module_description">Module to spoof package signatures.</string>\
+	<string name="permlab_fakePackageSignature">Spoof package signature</string>
+	<string name="permdesc_fakePackageSignature">Allows the app to pretend to have a different signature. Malicious applications may be able to abuse this to access private app data of other apps. Legitimate uses include for example bypassing GMS signature checks. Grant this with caution!</string>
+</resources>

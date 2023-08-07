@@ -2,8 +2,8 @@ name: Build APK
 
 on:
   push:
-    branches:
-      - '*'
+    branches-ignore:
+      - 'release'
     paths-ignore:
       - '**.md'
   pull_request:

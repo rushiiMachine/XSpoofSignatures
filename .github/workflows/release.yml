@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          ref: release
 
       - name: Test version
         id: version
@@ -36,17 +38,23 @@ jobs:
           distribution: 'zulu'
 
       - name: Build
+        env:
+          KEYSTORE_FILE: ./release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
-          CI=true ./gradlew :app:packageReleaseUniversalApk
-          mv -T app/build/outputs/apk_from_bundle/release/app-release-universal.apk XSpoofSignatures-${{ steps.version.outputs.release_tag }}.apk
+          echo '${{ secrets.KEYSTORE }}' | base64 -d > ./release.jks
+          CI=true RELEASE=true ./gradlew :app:packageReleaseUniversalApk
+          mv -T ./app/build/outputs/apk_from_bundle/release/app-release-universal.apk XSpoofSignatures-${{ steps.version.outputs.release_tag }}.apk
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: xspoofsignatures
           path: |
-            app/build/outputs/apk_from_bundle/release/app-release-universal.apk
+            XSpoofSignatures-${{ steps.version.outputs.release_tag }}.apk
 
       - name: Publish release
         uses: softprops/action-gh-release@v1

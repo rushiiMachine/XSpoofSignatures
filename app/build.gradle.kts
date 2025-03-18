@@ -8,7 +8,7 @@ android {
 
 	defaultConfig {
 		applicationId = "dev.materii.rushii.xspoofsignatures"
-		minSdk = 16
+		minSdk = 3 // Yes, this is accurate
 		targetSdk = 35
 		versionCode = 1
 		versionName = "1.0.0"
@@ -46,11 +46,6 @@ android {
 				signingConfig = signingConfigs.getByName("debug")
 			}
 		}
-	}
-
-	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_1_8
-		targetCompatibility = JavaVersion.VERSION_1_8
 	}
 }
 

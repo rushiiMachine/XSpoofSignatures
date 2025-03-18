@@ -117,22 +117,16 @@ public class Main implements IXposedHookLoadPackage {
 		};
 
 		String targetClass;
-		switch (Build.VERSION.SDK_INT) {
-			case Build.VERSION_CODES.UPSIDE_DOWN_CAKE:
-			case Build.VERSION_CODES.TIRAMISU:
-				targetClass = "com.android.server.pm.ComputerEngine";
-				break;
-			case Build.VERSION_CODES.S_V2:
-			case Build.VERSION_CODES.S:
-				targetClass = "com.android.server.pm.PackageManagerService$ComputerEngine";
-				break;
-			default:
-				targetClass = "com.android.server.pm.PackageManagerService";
-				break;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			targetClass = "com.android.server.pm.ComputerEngine";
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			targetClass = "com.android.server.pm.PackageManagerService$ComputerEngine";
+		} else {
+			targetClass = "com.android.server.pm.PackageManagerService";
 		}
 
 		final Class<?> hookClass = XposedHelpers.findClass(targetClass, lpparam.classLoader);
 		XposedBridge.hookAllMethods(hookClass, "generatePackageInfo", hook);
-		Log.d(TAG, String.format("Hooking all %s#generatePackageInfo(...)", targetClass));
+		Log.d(TAG, String.format("Hooking %s#generatePackageInfo(...)", targetClass));
 	}
 }

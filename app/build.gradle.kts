@@ -9,6 +9,7 @@ android {
 	defaultConfig {
 		applicationId = "dev.materii.rushii.xspoofsignatures"
 		minSdk = 16
+		targetSdk = 35
 		versionCode = 1
 		versionName = "1.0.0"
 	}

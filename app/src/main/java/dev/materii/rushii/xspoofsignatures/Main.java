@@ -7,6 +7,7 @@ import android.util.Log;
 import de.robv.android.xposed.*;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
+@SuppressWarnings("deprecation")
 public class Main implements IXposedHookLoadPackage {
 	private static final String TAG = "XSpoofSignatures";
 

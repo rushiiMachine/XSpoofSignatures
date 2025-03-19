@@ -1,4 +1,4 @@
-name: Build and publish release
+name: Publish Release
 
 concurrency:
   group: "release"
@@ -6,36 +6,21 @@ concurrency:
 
 on:
   push:
-    branches:
-      - 'release'
-  workflow_dispatch:
+    tags: [ "*.*.*" ]
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: release
+        uses: actions/checkout@v4
 
-      - name: Test version
-        id: version
-        run: |
-          version=$(cat app/build.gradle.kts | grep -E 'versionName = "' | cut -d \" -f 2)
-          if git show-ref --tags --quiet --verify -- "refs/tags/$version" >/dev/null; then
-            echo "Git tag $version already exists, failing to publish";
-            exit 1
-          else
-            echo "::set-output name=release_tag::$version"
-          fi
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: 'zulu'
+          java-version: 21
+          distribution: "temurin"
 
       - name: Build
         env:
@@ -44,22 +29,23 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          chmod +x ./gradlew
           echo '${{ secrets.KEYSTORE }}' | base64 -d > ./release.jks
-          CI=true RELEASE=true ./gradlew :app:packageReleaseUniversalApk
-          mv -T ./app/build/outputs/apk_from_bundle/release/app-release-universal.apk XSpoofSignatures-${{ steps.version.outputs.release_tag }}.apk
+          chmod +x ./gradlew
+          RELEASE=true ./gradlew :app:assembleRelease --stacktrace --no-daemon
+          mv -T ./app/build/outputs/apk/release/app-release.apk dev.rushii.xspoofsignatures-${{ github.ref_name }}.apk
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: xspoofsignatures
+          name: XSpoofSignatures
+          if-no-files-found: error
           path: |
-            XSpoofSignatures-${{ steps.version.outputs.release_tag }}.apk
+            dev.rushii.xspoofsignatures-${{ github.ref_name }}.apk
 
       - name: Publish release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.release_tag }}
+          tag_name: v${{ github.ref_name }}
           generate_release_notes: true
           fail_on_unmatched_files: true
-          files: XSpoofSignatures-${{ steps.version.outputs.release_tag }}.apk
+          files: dev.rushii.xspoofsignatures-${{ github.ref_name }}.apk

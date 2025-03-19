@@ -4,7 +4,7 @@ Xposed module to spoof package signatures.
 
 ## Features
 
-- Support Android >= 1.5 (Cupcake)
+- Supports Android >= 1.5 (Cupcake)
 - Compatible with the standardized spoofing
   mechanic ([microG](https://github.com/microg/GmsCore/tree/a787b52ccc56b2e197bf38e1229bb4206538cd12/patches))
 - Allow any package to spoof their signature through manifest properties
@@ -19,7 +19,7 @@ Xposed module to spoof package signatures.
 4. Install XSpoofSignatures from [here](https://github.com/rushiiMachine/XSpoofSignatures/releases/latest)
 5. Enable it in LSPosed
 6. Verify that signature spoofing works via [Signature Spoofing Checker](https://f-droid.org/en/packages/lanchon.sigspoof.checker)
-7. Use apps that require signature spoofing
+7. You can now use apps that require signature spoofing (like microG)
 
 ## Usage (developers)
 

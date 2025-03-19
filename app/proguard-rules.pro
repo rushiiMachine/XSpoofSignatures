@@ -4,5 +4,4 @@
 -overloadaggressively
 -optimizationpasses 5
 
--keepnames class *
--keeppackagenames
+-dontobfuscate

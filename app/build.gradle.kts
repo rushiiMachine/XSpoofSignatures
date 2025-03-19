@@ -49,10 +49,6 @@ android {
 	}
 }
 
-tasks.withType<JavaCompile> {
-	options.compilerArgs.add("-Xlint:-deprecation")
-}
-
 dependencies {
 	compileOnly("de.robv.android.xposed:api:82")
 }

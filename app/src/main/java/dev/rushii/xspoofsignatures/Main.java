@@ -7,6 +7,7 @@ import android.util.Log;
 import de.robv.android.xposed.*;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
+@SuppressWarnings("deprecation")
 public class Main implements IXposedHookLoadPackage {
 	private static final String TAG = "XSpoofSignatures";
 
@@ -51,12 +52,22 @@ public class Main implements IXposedHookLoadPackage {
 		XC_MethodHook hook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) {
-				long flags = (long) param.args[1];
+				// https://cs.android.com/android/platform/superproject/+/android-12.1.0_r5:frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java;l=3325;drc=32796cd24bf5b392d5e823d4c6abc4e2f1dfe4a2
+				// https://cs.android.com/android/platform/superproject/+/android-13.0.0_r1:frameworks/base/services/core/java/com/android/server/pm/ComputerEngine.java;l=1594;drc=66acf93106a784172c39e6bbf5c22a1aa3563e0b
+				long flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+					? (long) param.args[1]
+					: (long) (int) param.args[1];
 
 				// Avoid getting metadata when not needed
 				if (!isFetchingSignatures(flags)) return;
 
-				param.args[1] = flags | PackageManager.GET_META_DATA | PackageManager.GET_PERMISSIONS;
+				flags |= PackageManager.GET_META_DATA | PackageManager.GET_PERMISSIONS;
+
+				// Explicit cast to Object is needed, otherwise the compiler boxes the value into a Long for both branches??
+				// I hate java
+				param.args[1] = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+					? (Object) flags
+					: (Object) (int) flags;
 			}
 
 			@Override
@@ -64,7 +75,9 @@ public class Main implements IXposedHookLoadPackage {
 				PackageInfo pi = (PackageInfo) param.getResult();
 				if (pi == null) return;
 
-				long flags = (long) param.args[1];
+				long flags = param.args[1] instanceof Integer
+					? (long) (int) param.args[1]
+					: (long) param.args[1];
 				if (!isFetchingSignatures(flags)) return;
 
 				// Get the declared fake signature from manifest meta-data
@@ -137,6 +150,6 @@ public class Main implements IXposedHookLoadPackage {
 		final String hookClassName = getHookClassName();
 		final Class<?> hookClass = XposedHelpers.findClass(hookClassName, lpparam.classLoader);
 		XposedBridge.hookAllMethods(hookClass, "generatePackageInfo", hook);
-		Log.d(TAG, String.format("Hooking %s#generatePackageInfo(...)", hookClassName));
+		Log.d(TAG, String.format("Hooking all %s#generatePackageInfo(...)", hookClassName));
 	}
 }

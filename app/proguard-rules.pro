@@ -1,4 +1,4 @@
--keep class dev.materii.rushii.xspoofsignatures.Main
+-keep class dev.rushii.xspoofsignatures.Main
 
 -allowaccessmodification
 -overloadaggressively

@@ -1,4 +1,4 @@
-package dev.materii.rushii.xspoofsignatures;
+package dev.rushii.xspoofsignatures;
 
 import android.content.pm.*;
 import android.os.Build;

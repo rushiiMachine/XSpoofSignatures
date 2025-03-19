@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-	namespace = "dev.materii.rushii.xspoofsignatures"
+	namespace = "dev.rushii.xspoofsignatures"
 	compileSdk = 34
 
 	defaultConfig {
-		applicationId = "dev.materii.rushii.xspoofsignatures"
+		applicationId = "dev.rushii.xspoofsignatures"
 		minSdk = 3 // Yes, this is accurate
 		targetSdk = 35
 		versionCode = 1

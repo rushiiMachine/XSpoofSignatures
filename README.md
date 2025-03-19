@@ -37,3 +37,5 @@ to spoof it's own signature:
 
 - `fake-signature` -> The certificate fingerprint in hex
 - `fake-signature-only` (optional, default `true`) -> Refer to "Sole signer" above
+
+To see an example usage of signature spoofing, see [sigspoof-checker](https://github.com/Lanchon/sigspoof-checker).

@@ -4,19 +4,22 @@ Xposed module to spoof package signatures.
 
 ## Features
 
-- Allow any package to spoof their signature
-	- Bypass GMS checks
-- Make spoofed signature either the sole or first signer
-- Spoof only after permission granted
-- Compatible with the standardized spoofing mechanic ([ref: microG](https://github.com/microg/GmsCore/tree/master/patches))
+- Support Android >= 1.5 (Cupcake)
+- Compatible with the standardized spoofing
+  mechanic ([microG](https://github.com/microg/GmsCore/tree/a787b52ccc56b2e197bf38e1229bb4206538cd12/patches))
+- Allow any package to spoof their signature through manifest properties
+	- Allow bypassing GMS checks
+- Spoofing gated behind a permission
 
 ## Install
 
 1. Use [Magisk](https://github.com/topjohnwu/Magisk) to root your device
 2. Enable Zygisk
-3. Install [LSPosed](https://github.com/LSPosed/LSPosed)
+3. Install [LSPosed](https://github.com/LSPosed/LSPosed) or the updated [LSPosed fork](https://github.com/mywalkb/LSPosed_mod)
 4. Install XSpoofSignatures from [here](https://github.com/rushiiMachine/XSpoofSignatures/releases/latest)
 5. Enable it in LSPosed
+6. Verify that signature spoofing works via [Signature Spoofing Checker](https://f-droid.org/en/packages/lanchon.sigspoof.checker)
+7. Use apps that require signature spoofing
 
 ## Usage (developers)
 
